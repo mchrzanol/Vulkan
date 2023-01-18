@@ -1,9 +1,21 @@
+#define GLFW_INCLUDE_VULKAN// it replace #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <iostream>
+#include <stdexcept>
+#include <cstdlib>
+#include "HelloTriangle.hpp"
 
-int main()
-{
-	glfwInit();
-	std::cout << "hi" << std::endl;
-	return 0;
+int main() {
+    HelloTriangleApplication app;
+
+    try {
+        app.run();
+    }
+    catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }
