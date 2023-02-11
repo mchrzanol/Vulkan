@@ -424,6 +424,8 @@ void HelloTriangleApplication::initVulkan() {
     createLogicalDevice();
     createSwapChain();
     createImageViews();
+    pipeline.createRenderPasses(device, swapChainImageFormat);
+    pipeline.createGraphicsPipeline(device, swapChainExtent);
 }
 
 void HelloTriangleApplication::mainLoop() {
@@ -434,6 +436,10 @@ void HelloTriangleApplication::mainLoop() {
 
 
 void HelloTriangleApplication::cleanup() {
+    vkDestroyPipeline(device, pipeline.graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(device, pipeline.pipelineLayout, nullptr);
+    vkDestroyRenderPass(device, pipeline.renderPass, nullptr);
+
     for (auto imageView : swapChainImageViews) {
         vkDestroyImageView(device, imageView, nullptr);
     }

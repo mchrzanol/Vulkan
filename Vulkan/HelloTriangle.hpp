@@ -13,6 +13,8 @@
 #include <limits> 
 #include <algorithm> 
 
+#include "GraphicsPipeline.h"
+
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
     std::optional<uint32_t> presentFamily;
@@ -76,6 +78,8 @@ private:
     VkExtent2D swapChainExtent;
 
     std::vector<VkImageView> swapChainImageViews;
+
+    GraphicsPipeline pipeline;
 
     void initWindow();
 
