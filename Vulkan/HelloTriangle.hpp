@@ -14,6 +14,7 @@
 #include <algorithm> 
 
 #include "GraphicsPipeline.h"
+#include "Framebuffer.h"
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
@@ -80,6 +81,15 @@ private:
     std::vector<VkImageView> swapChainImageViews;
 
     GraphicsPipeline pipeline;
+    Framebuffer framebuffer;
+
+    VkCommandPool commandPool;
+    VkCommandBuffer commandBuffer;
+
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
+    
 
     void initWindow();
 
@@ -105,6 +115,15 @@ private:
     void createLogicalDevice();
 
     void createImageViews();
+
+    void createCommandPool();
+    void createCommandBuffer();
+    void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex, VkRenderPass & renderPass,
+        std::vector<VkFramebuffer> &swapChainFramebuffers, VkPipeline & graphicsPipeline);
+
+    void drawFrame();
+
+    void createSyncObjects();
 
     void mainLoop();
 

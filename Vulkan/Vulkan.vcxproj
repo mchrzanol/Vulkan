@@ -80,12 +80,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="GraphicsPipeline.cpp" />
     <ClCompile Include="HelloTriangle.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CallbackMessage.h" />
+    <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="HelloTriangle.hpp" />
   </ItemGroup>
