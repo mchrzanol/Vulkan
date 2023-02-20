@@ -12,9 +12,13 @@
 #include <cstdint>
 #include <limits> 
 #include <algorithm> 
+#include<glm/glm.hpp>
+#include <array>
 
 #include "GraphicsPipeline.h"
 #include "Framebuffer.h"
+
+const int MAX_FRAMES_IN_FLIGHT = 2;
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
@@ -30,6 +34,7 @@ struct SwapChainSupportDetails {
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
 };
+
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -84,14 +89,40 @@ private:
     Framebuffer framebuffer;
 
     VkCommandPool commandPool;
-    VkCommandBuffer commandBuffer;
+    std::vector<VkCommandBuffer> commandBuffers;
 
-    VkSemaphore imageAvailableSemaphore;
-    VkSemaphore renderFinishedSemaphore;
-    VkFence inFlightFence;
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFlightFences;
+
+    bool framebufferResized = false;
+    uint32_t currentFrame = 0;
     
+    const std::vector<Vertex> vertices = {
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+    };
+    VkBuffer vertexBuffer;
+    VkDeviceMemory vertexBufferMemory;
+
+    const std::vector<uint16_t> indices = {
+    0, 1, 2, 2, 3, 0
+    };
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+    void createVertexBuffer();
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+    void createIndexBuffer();
 
     void initWindow();
+
+    static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
     void checkExtensions();
 
@@ -117,13 +148,16 @@ private:
     void createImageViews();
 
     void createCommandPool();
-    void createCommandBuffer();
+    void createCommandBuffers();
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex, VkRenderPass & renderPass,
         std::vector<VkFramebuffer> &swapChainFramebuffers, VkPipeline & graphicsPipeline);
 
     void drawFrame();
 
     void createSyncObjects();
+
+    void recreateSwapChain();
+    void cleanupSwapChain();
 
     void mainLoop();
 
