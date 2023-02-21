@@ -12,8 +12,13 @@
 #include <cstdint>
 #include <limits> 
 #include <algorithm> 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 #include<glm/glm.hpp>
 #include <array>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <chrono>
 
 #include "GraphicsPipeline.h"
 #include "Framebuffer.h"
@@ -33,6 +38,12 @@ struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
+};
+
+struct UniformBufferObject {
+    alignas(16) glm::mat4 model;//alignas(16) = przesuniecie bajtowe(co 16 bajtów)
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
 };
 
 
@@ -85,6 +96,8 @@ private:
 
     std::vector<VkImageView> swapChainImageViews;
 
+    //external libs
+    VkDescriptorSetLayout descriptorSetLayout;
     GraphicsPipeline pipeline;
     Framebuffer framebuffer;
 
@@ -97,7 +110,15 @@ private:
 
     bool framebufferResized = false;
     uint32_t currentFrame = 0;
+
+    //uniforms
+    std::vector<VkBuffer> uniformBuffers;
+    std::vector<VkDeviceMemory> uniformBuffersMemory;
+    std::vector<void*> uniformBuffersMapped;
+    VkDescriptorPool descriptorPool;
+    std::vector<VkDescriptorSet> descriptorSets;
     
+    //VertexBuffer and IndexBuffer
     const std::vector<Vertex> vertices = {
     {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
     {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
@@ -119,6 +140,7 @@ private:
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
     void createIndexBuffer();
+    //#############################################################
 
     void initWindow();
 
@@ -136,17 +158,22 @@ private:
 
     bool isDeviceSuitable(VkPhysicalDevice device);
 
+    //SwapChain
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     void createSwapChain();
+    void recreateSwapChain();
+    void cleanupSwapChain();
 
+    //picking GPU and CPU
     void pickPhysicalDevice();
     void createLogicalDevice();
 
     void createImageViews();
 
+    //commandPool
     void createCommandPool();
     void createCommandBuffers();
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex, VkRenderPass & renderPass,
@@ -156,8 +183,12 @@ private:
 
     void createSyncObjects();
 
-    void recreateSwapChain();
-    void cleanupSwapChain();
+    //unifroms
+    void createDecriptorSetLayout();
+    void createUnifromBuffer();
+    void updateUniformBuffer(uint32_t currentImage);
+    void createDescriptorPool();
+    void createDescriptorSets();
 
     void mainLoop();
 

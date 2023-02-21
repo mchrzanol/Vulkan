@@ -54,7 +54,7 @@ public:
 	VkPipelineLayout pipelineLayout;
 	VkRenderPass renderPass;
 
-	void createGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent);
+	void createGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkDescriptorSetLayout & descriptorSetLayout);
 	void createRenderPasses(VkDevice device, VkFormat swapChainImageFormat);
 };
 
